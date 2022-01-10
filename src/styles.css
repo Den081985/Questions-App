@@ -45,3 +45,9 @@ button {
     margin-left: 180px;
   }
 }
+
+.floating-btn {
+  position: fixed;
+  bottom: 60px;
+  right: 60px;
+}
