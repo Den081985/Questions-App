@@ -1,6 +1,8 @@
 import { isValid } from "./utils";
 import { Question } from "./question";
+import { createModal } from "./utils";
 import "./styles.css";
+import { getAuthHtml } from "../auth";
 
 const form = document.getElementById("form");
 const input = form.querySelector("#question-input");
@@ -39,5 +41,18 @@ function submitHandler(event) {
     });
   }
 }
-
-function openModal() {}
+//функция для вывода модального окна авторизации
+//параметр { once: true } служит для того,чтобы данное событие было вызвано только один раз
+function openModal() {
+  createModal("Авторизация", getAuthHtml());
+  document
+    .getElementById("auth-form")
+    .addEventListener("submit", authFormHandler(), { once: true });
+}
+//функция, контролирующая поведение формы авторизации
+function authFormHandler(event) {
+  event.preventDefault();
+  //сохраняем в константы значения данных,введенных в поля формы
+  const email = event.target.querySelector("#email").value;
+  const password = event.target.querySelector("#password").value;
+}
