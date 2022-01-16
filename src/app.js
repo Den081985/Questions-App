@@ -2,7 +2,7 @@ import { isValid } from "./utils";
 import { Question } from "./question";
 import { createModal } from "./utils";
 import "./styles.css";
-import { getAuthHtml } from "../auth";
+import { getAuthHtml, authWithEmailAndPassword } from "../auth";
 
 const form = document.getElementById("form");
 const input = form.querySelector("#question-input");
@@ -47,12 +47,30 @@ function openModal() {
   createModal("Авторизация", getAuthHtml());
   document
     .getElementById("auth-form")
-    .addEventListener("submit", authFormHandler(), { once: true });
+    .addEventListener("submit", authFormHandler, { once: true });
 }
 //функция, контролирующая поведение формы авторизации
 function authFormHandler(event) {
   event.preventDefault();
   //сохраняем в константы значения данных,введенных в поля формы
+  const btn = event.target.querySelector("#submit-btn");
   const email = event.target.querySelector("#email").value;
   const password = event.target.querySelector("#password").value;
+
+  btn.disabled = true;
+
+  authWithEmailAndPassword(email, password)
+    .then(Question.fetch)
+    .then(renderModalAfterAuth)
+    .then(() => (btn.disabled = false));
+}
+//функция для рендеринга модального окна после авторизации
+function renderModalAfterAuth(content) {
+  //при ошибке запроса на сервер вернется строка ошибки,при успешном ответе-массив
+  //проверяем если вернулась строка-сообщаем об ошибке,если массив вопросов-рендерим вопросы
+  if (typeof content === "string") {
+    createModal("Ошибка", content);
+  } else {
+    createModal("Вопросы", Question.listToHTML(content));
+  }
 }
