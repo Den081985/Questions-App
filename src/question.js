@@ -31,6 +31,40 @@ export class Question {
     const list = document.getElementById("list");
     list.innerHTML = html;
   }
+  //функция для работы с idToken,полученным с сервера
+  //c помощью fetch получаем список всех вопросов с сервера
+  static fetch(token) {
+    if (!token) {
+      return Promise.resolve("<p class ='error'>У Вас нет токена</p>");
+    }
+    return fetch(
+      `https://questions-app-b36af-default-rtdb.firebaseio.com/questions.json?auth=${token}`
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        if (response && response.error) {
+          return `<p class ='error'>${response.error}</p>`;
+        }
+        //Метод map() создаёт новый массив с результатом вызова указанной функции для каждого элемента массива.
+        //Метод Object.keys() возвращает массив из собственных перечисляемых свойств переданного объекта
+        //получаем ключи из ответа и с помощью map создаем новый массив из объектов с всеми полями
+        //response и id=key, если ответа нет возвращаем пустой массив
+        return response //если ответ не пустой
+          ? Object.keys(response).map((key) => ({
+              ...response[key], //text, date
+              id: key,
+            }))
+          : []; //если ответ пустой
+      });
+  }
+  //метод для приведения списка вопросов к html
+  static listToHTML(questions) {
+    return questions.length
+      ? `<ol>${questions
+          .map((quest) => `<li>${quest.text}</li>`) //map вернет массив,чтобы преобразовать его в строку используем join("")
+          .join("")}</ol>`
+      : "<p>Вопросов нет</p>";
+  }
 }
 
 // функция для добавления вопросов в LocalStorage
