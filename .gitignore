@@ -1,3 +1,6 @@
 package-lock.json
 webpack.config.js
 node_modules
+firebase.json
+.firebaserc
+.firebase
